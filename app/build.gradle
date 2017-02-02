@@ -13,13 +13,13 @@ apt {
 }
 
 android {
-    compileSdkVersion 15
-    buildToolsVersion "21.1.2"
+    compileSdkVersion 24
+    buildToolsVersion "24.0.2"
 
     defaultConfig {
         applicationId "com.yefeng.night.btprinter"
-        minSdkVersion 10
-        targetSdkVersion 15
+        minSdkVersion 18
+        targetSdkVersion 24
         versionCode 1
         versionName "1.0"
     }
@@ -33,9 +33,10 @@ android {
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile 'com.android.support:appcompat-v7:20.0.0'
-    compile 'com.android.support:support-v4:20.0.0'
+    compile 'com.android.support:appcompat-v7:24.2.1'
+    compile 'com.android.support:design:24.2.1'
     apt "org.androidannotations:androidannotations:3.0.1"
     compile 'org.androidannotations:androidannotations-api:3.0.1'
     compile 'de.greenrobot:eventbus:2.2.1'
+    compile 'com.alibaba:fastjson:1.2.24'
 }

@@ -9,7 +9,10 @@ import android.util.Log;
 
 import com.yefeng.night.btprinter.print.PrintMsgEvent;
 import com.yefeng.night.btprinter.print.PrintQueue;
+import com.yefeng.night.btprinter.print.PrintQueue2;
 import com.yefeng.night.btprinter.print.PrinterMsgType;
+import com.yefeng.night.btprinter.print.escp.EscPos;
+import com.yefeng.night.btprinter.print.escp.params.TemplateParamBean;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -166,6 +169,8 @@ public class BtService {
         // call print queue to print
         PrintQueue.getQueue(mContext).print();
 
+        PrintQueue2.getQueue(mContext).print();
+
     }
 
     /**
@@ -197,6 +202,24 @@ public class BtService {
      * @param out The bytes to write
      */
     public void write(byte[] out) {
+        // Create temporary object
+        ConnectedThread r;
+        // Synchronize a copy of the ConnectedThread
+        synchronized (this) {
+            if (mState != STATE_CONNECTED)
+                return;
+            r = mConnectedThread;
+        }
+        // Perform the write unsynchronized
+        r.write(out);
+    }
+
+    /**
+     * Write to the ConnectedThread in an unsynchronized manner
+     *
+     * @param out The bytes to write
+     */
+    public void write(TemplateParamBean out) {
         // Create temporary object
         ConnectedThread r;
         // Synchronize a copy of the ConnectedThread
@@ -472,6 +495,8 @@ public class BtService {
                     // Read from the InputStream
                     bytes = mmInStream.read(buffer);
                     // send data
+                    Log.e(TAG,"fffffffffffffffff");
+                    Log.e(TAG, new String(buffer) );
                     EventBus.getDefault().post(new BtMsgReadEvent(bytes, buffer));
                 } catch (IOException e) {
                     Log.e(TAG, "disconnected", e);
@@ -486,6 +511,18 @@ public class BtService {
                 }
             }
         }
+
+        public void write(TemplateParamBean template){
+            try {
+
+                EscPos.getInstance(this.mmSocket);
+                EscPos.print(template.getTemplate(),template.getParam());
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
 
         /**
          * Write to the connected OutStream.

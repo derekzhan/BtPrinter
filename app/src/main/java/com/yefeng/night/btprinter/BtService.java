@@ -9,7 +9,9 @@ import android.util.Log;
 import com.yefeng.night.btprinter.print.GPrinterCommand;
 import com.yefeng.night.btprinter.print.PrintPic;
 import com.yefeng.night.btprinter.print.PrintQueue;
+import com.yefeng.night.btprinter.print.PrintQueue2;
 import com.yefeng.night.btprinter.print.PrintUtil;
+import com.yefeng.night.btprinter.print.escp.params.TemplateParamBean;
 
 import java.io.BufferedInputStream;
 import java.io.UnsupportedEncodingException;
@@ -42,7 +44,7 @@ public class BtService extends IntentService {
             return;
         }
         if (intent.getAction().equals(PrintUtil.ACTION_PRINT_TEST)) {
-            printTest();
+            printTest2();
         } else if (intent.getAction().equals(PrintUtil.ACTION_PRINT)) {
             print(intent.getByteArrayExtra(PrintUtil.PRINT_EXTRA));
         } else if (intent.getAction().equals(PrintUtil.ACTION_PRINT_TICKET)) {
@@ -53,15 +55,151 @@ public class BtService extends IntentService {
         }
     }
 
+    private void printTest2() {
+
+        TemplateParamBean templateParamBean = new TemplateParamBean();
+
+            String template= "{" +
+                    "    \"header\": [" +
+                    "        {" +
+                    "            \"text\": \"{$shopname}\"," +
+                    "            \"size\": 2," +
+                    "            \"bold\": true," +
+                    "            \"format\": 1," +
+                    "            \"line\": 2," +
+                    "            \"underline\": true," +
+                    "            \"type\": 0" +
+                    "        }," +
+                    "        {" +
+                    "            \"text\": \"--------------------------------\"," +
+                    "            \"size\": 0," +
+                    "            \"bold\": false," +
+                    "            \"format\": 1," +
+                    "            \"line\": 2," +
+                    "            \"underline\": false," +
+                    "            \"type\": 0" +
+                    "        }," +
+                    "    ]," +
+                    "    \"goods\": [" +
+                    "        {" +
+                    "            \"name\": \"菜名\"," +
+                    "            \"width\": 24," +
+                    "            \"format\": 0," +
+                    "            \"variable\": \"name\"" +
+                    "        }," +
+                    "        {" +
+                    "            \"name\": \"数量\"," +
+                    "            \"width\": 8," +
+                    "            \"format\": 1," +
+                    "            \"variable\": \"num\"" +
+                    "        }," +
+                    "        {" +
+                    "            \"name\": \"单位\"," +
+                    "            \"width\": 8," +
+                    "            \"format\": 1," +
+                    "            \"variable\": \"unit\"" +
+                    "        }," +
+                    "        {" +
+                    "            \"name\": \"金额\"," +
+                    "            \"width\": 8," +
+                    "            \"format\": 2," +
+                    "            \"variable\": \"pay\"" +
+                    "        }" +
+                    "    ]," +
+                    "    \"bill\": [" +
+                    "        {" +
+                    "            \"text\": \"{$cash}\"," +
+                    "            \"size\": 2," +
+                    "            \"bold\": true," +
+                    "            \"format\": 1," +
+                    "            \"line\": 2," +
+                    "            \"underline\": false," +
+                    "            \"type\": 0" +
+                    "        }," +
+
+                    "    ]," +
+                    "    \"footer\": [" +
+                    "        {" +
+                    "            \"text\": \"详情请访问官网\"," +
+                    "            \"size\": 2," +
+                    "            \"bold\": true," +
+                    "            \"format\": 1," +
+                    "            \"line\": 2," +
+                    "            \"underline\": true," +
+                    "            \"type\": 0" +
+                    "        }," +
+                    "        {" +
+                    "            \"text\": \"http://www.diancaiwawa.com\"," +
+                    "            \"format\": 1," +
+                    "            \"line\": 2," +
+                    "            \"type\": 0" +
+                    "        }" +
+                    "    ]" +
+                    "}";
+            String param = "{" +
+                    "  \"keys\": {" +
+                    "    \"shopname\": \"黄太吉\"," +
+                    "    \"time\": \"15:35\"," +
+                    "    \"num\": 14," +
+                    "    \"cash\": \"小计  ￥324.5\"," +
+                    "    \"adv\": \"关注微信，有大大地活动哦\"" +
+                    "  }," +
+                    "  \"goods\": [" +
+                    "    {" +
+                    "      \"name\": \"鱼香肉丝\"," +
+                    "      \"num\": 1," +
+                    "      \"unit\": \"份\"," +
+                    "      \"pay\": 12.8" +
+                    "    }," +
+                    "    {" +
+                    "      \"name\": \"葱油粑粑\"," +
+                    "      \"num\": 1," +
+                    "      \"unit\": \"份\"," +
+                    "      \"pay\": 4.8" +
+                    "    }," +
+                    "    {" +
+                    "      \"name\": \"辣椒炒肉,很好吃的额哦\"," +
+                    "      \"num\": 1," +
+                    "      \"unit\": \"份\"," +
+                    "      \"pay\": 14.8" +
+                    "    }" +
+                    "  ]" +
+                    "}";
+        templateParamBean.setTemplate(template);
+        templateParamBean.setParam(param);
+
+        PrintQueue2.getQueue(getApplicationContext()).add(templateParamBean);
+
+    }
+
     private void printTest() {
         try {
             ArrayList<byte[]> bytes = new ArrayList<byte[]>();
-            String message = "蓝牙打印测试\n蓝牙打印测试\n蓝牙打印测试\n\n";
+            String message = "[总单] 吧台\n"
+                    + "厅名：A区   台名：A29\n"
+                    + "账单号：002231231   人数：2\n"
+                    + "-------------------------------------------\n"
+                    + "菜名\t\t\t数量\t单位\t价格\n"
+                    + "韭菜煎饼好吃的很\t1\t份\t20\n"
+                    + "凉拌黄瓜ssss\t1\t份\t30\n"
+                    + "无果养生粥\t1\t份\t40\n"
+                    + "-------------------------------------------\n"
+                    + "小计\t ￥90.00\n"
+                    + "2017-02-01 20：05\n"
+                    + "\n"
+                    ;
             bytes.add(GPrinterCommand.reset);
+            bytes.add(GPrinterCommand.bold);
+            //bytes.add(GPrinterCommand.text_big_size);
             bytes.add(message.getBytes("gbk"));
             bytes.add(GPrinterCommand.print);
+
+            bytes.add(GPrinterCommand.reset);
+            bytes.add("No.11231231".getBytes("gbk"));
             bytes.add(GPrinterCommand.print);
             bytes.add(GPrinterCommand.print);
+            bytes.add(GPrinterCommand.print);
+
             PrintQueue.getQueue(getApplicationContext()).add(bytes);
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
